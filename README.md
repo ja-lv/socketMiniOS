@@ -6,7 +6,8 @@ Linux OS
 C++ compiler
 
 ## Install
-Run the following on shell command from the project's root folder. 
+Run the following on shell command from the project's root folder:
+
 `make all`
 
 ## Run
