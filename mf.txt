@@ -1,0 +1,10 @@
+CC=gcc
+CFLAGS=-I
+BDIR = /build
+IDIR = /include
+SDIR = /src
+SROOT = /Server
+CROOT = /Client
+
+$(SROOT)$(BDIR)/basic_client = basic_client.o server_utils.o
+    $(CC) -o $(SROOT)$(BDIR)/basic_client $(SROOT)$(SDIR)/server_utils.c
