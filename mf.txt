@@ -8,3 +8,6 @@ CROOT = /Client
 
 $(SROOT)$(BDIR)/basic_client = basic_client.o server_utils.o
     $(CC) -o $(SROOT)$(BDIR)/basic_client $(SROOT)$(SDIR)/server_utils.c
+
+test-
+g++ -o ./Server/build/basic_client ./Server/src/basic_server.cpp ./Server/src/server_utils.cpp -I./_Config/
