@@ -54,7 +54,7 @@ int main(){
 
 string defaultRequest(string msg){
     cout << "message recieved: " + msg << endl;
-    return "yeee baaabyyy and u said " + msg;
+    return "yeee and you said " + msg;
 }
 
 string test(string msg){
