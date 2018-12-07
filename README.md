@@ -12,9 +12,21 @@ Run the following on shell command from the project's root folder:
 
 ## Run
 From the build folder run:
-### -Server 
 
-### -Client
-The client will ask for hostname and port
+### -Server/ 
 
+`./basic_server`
+
+The server will throw the **hostname** and **port number** clients will require.
+It listens for the following commands where str is a string.
+
+* `reverse str` - Reverses a string
+* `ls` - Returns the output from ls command. *****
+
+### -Client/
+
+`./sample client`
+
+The client will ask for hostname and port to connect with a server. 
+It will then ask for a message to send, and display messages the server returns
 
