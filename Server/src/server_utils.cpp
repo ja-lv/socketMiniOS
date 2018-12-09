@@ -53,7 +53,8 @@ Server_Utils::Server_Utils(int port){
 
 Server_Utils::~Server_Utils(){
     //close our sockets
-    close_connection();
+     close(newsockfd);
+     close(sockfd);
 }
 
 void Server_Utils::error(string msg){
@@ -65,7 +66,7 @@ void Server_Utils::error(string msg){
 // returns status
 // 0 = success, 1 = end argument, 2 = ERROR on accept, 3 = ERROR reading from socket, 4 = ERROR writing to socket
 // default function will take in the full user message
-int Server_Utils::run_server_rq(map<string, function<string (string)>> fmap, function<string (string)> default_f, string end_arg ){
+int Server_Utils::run_server_rq(map<string, function<string (string)>> fmap, function<string (string)> default_f, string end_arg){
     if (newsockfd < 0) {
         // error("ERROR on accept");
         return 2;
@@ -89,14 +90,14 @@ int Server_Utils::run_server_rq(map<string, function<string (string)>> fmap, fun
     response = sanitize(response);
 
     string user_command = response.substr(0, response.find(" "));
-    string user_arguments = response.find(" ") != string::npos ? response.substr(response.find(" ")+1) : "\0";
+    string user_arguments = response.substr(response.find(" ")+1);
 
     if(response.compare(end_arg) == 0 || user_command == end_arg){
         return 1;
     }
 
     string message;
-    if(fmap[user_command]){
+    if(fmap[user_command] && user_arguments.length() > 0){
         message = fmap[user_command](user_arguments);
     }
     else{

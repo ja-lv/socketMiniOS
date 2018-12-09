@@ -17,6 +17,7 @@ using namespace std;
 #include "../include/server_utils.h"
 
 //headers
+string initializeFileSystem(string msg);
 string test(string msg);
 string defaultRequest(string msg);
 string str_reverse(string msg);
@@ -29,14 +30,16 @@ int main(){
     Server_Utils server(PORT);
     cout << "Running server on port #" << to_string(server.getPortNumber()) + "\n" << endl;
     server.listen_connection();
-    cout << "Connection made.... Booting up server.....\n" << endl;
+    cout << "Booting up server.....\n" << endl;
     //setup data
 
     map<string, function<string (string)>> the_map;
 
     //setup functions
+    the_map["test"] = test;
     the_map["reverse"] = str_reverse;
     the_map["ls"] = ls;
+    the_map["ifs"] = initializeFileSystem;
 
     //infinite loop to act as a server
     while(1){
@@ -51,16 +54,23 @@ int main(){
     return 0;
 }
 
+string initializeFileSystem(string msg){
+    cout << "Initialize file system command received" << endl;
+    return "Initializing file system";
+}
+
 string defaultRequest(string msg){
     cout << "message recieved: " + msg << endl;
-    return "Please input valid arguments... Message recieved: " + msg;
+    return "yeee and you said " + msg;
+}
+
+string test(string msg){
+    cout << "message recieved: " + msg << endl;
+    return "I am testing this and you said " + msg;
 }
 
 string str_reverse(string msg){
     cout << "message recieved, to be reversed: " + msg << endl;
-    if(msg == "\0"){
-        return defaultRequest("\0");
-    }
     string copy = msg;
     reverse(copy.begin(), copy.end());
     return copy;
@@ -68,7 +78,9 @@ string str_reverse(string msg){
 
 string ls(string msg){
     cout << "message recieved, to be ls'd: " + msg << endl;
-    return dup_shell("ls", msg);
+    
+    string rspns = dup_shell("ls", msg);
+    return rspns;
 }
 
 string dup_shell(string arg, string args){
@@ -95,12 +107,7 @@ string dup_shell(string arg, string args){
         close(fd[1]);
 
         //run the command
-        if(args.length() > 0){
-            execlp(arg.c_str(), arg.c_str(), args.c_str(), NULL);
-        }
-        else{
-            execlp(arg.c_str(), arg.c_str(), NULL);
-        }
+        execvp(arg.c_str(), s_split(args));
         
         exit(0);
     }
@@ -114,4 +121,17 @@ string dup_shell(string arg, string args){
 
     string rspns = str;
     return rspns;
+}
+
+char** s_split(string str){
+    int i;
+    char* buff[10];
+    char *token = strtok(strdup(str.c_str()), " ");
+    while (token != NULL) {
+        buff[i] = token;
+        token = strtok(NULL, " ");
+        i++;
+    }
+
+    return buff;
 }
