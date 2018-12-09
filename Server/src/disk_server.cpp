@@ -100,7 +100,11 @@ string disk_read(string msg){
     cout << "disk info request recieved: " + msg << endl;
 
     int c_index = msg.find(" ");
-    if(c_index == string::npos) return "wrong arguments! R c s";
+    if(c_index == string::npos){
+        cout << "wrong arguments! R c s" << endl;
+        return "0";
+    }
+
     string c_s = msg.substr(0, c_index);
     string s_s = msg.substr(c_index+1);
 
@@ -110,17 +114,20 @@ string disk_read(string msg){
         s = stoi(s_s);
     }
     catch(std::invalid_argument&){
-		return "invalids R c s! c s must be integers.";
+        cout << "invalid R c s! c s must be integers." << endl;
+        return "0";
 	}
 
     if((c >= 0 && c < disk_cylinders && s >= 0 && s < disk_sectors)){
         string rspns = (string) get_block(c, s);
         if(NULL_STR.compare(rspns) == 0) return "0";
-        return rspns;
+        return to_string(rspns.length()) + " " + rspns;
     }
 
-    return "Wrong argument size..Current c s: " + to_string(c) + " " + to_string(s) 
-            + ". Max c and s: " + to_string(disk_cylinders - 1) + " " + to_string(disk_sectors - 1);
+    cout << "Wrong argument size..Current c s: " + to_string(c) + " " + to_string(s) 
+            + ". Max c and s: " + to_string(disk_cylinders - 1) + " " + to_string(disk_sectors - 1) << endl;
+
+    return "0";
 }
 
 //(l*M*N) + (m * N + n)
@@ -135,24 +142,34 @@ string get_block(int c, int s){
     }
     //make sure the last value is a null
     if(block[i] != (char) NULL) block[i] = (char) NULL;
-    return (string) block;
+    string result = block;
+    return result;
 }
 
 string disk_write(string msg){
     cout << "disk info request recieved: " + msg << endl;
 
     int c_index = msg.find(" ");
-    if(c_index == string::npos) return "wrong arguments! W c s l data";
+    if(c_index == string::npos){
+        cout << "wrong arguments! W c s l data" << endl;
+        return "0";
+    }
     string c_s = msg.substr(0, c_index);
     msg = msg.substr(c_index+1);
 
     int s_index = msg.find(" ");
-    if(s_index == string::npos) return "wrong sector size!";
+    if(s_index == string::npos){
+        cout << "wrong sector size!" << endl;
+        return "0";
+    }
     string s_s = msg.substr(0, s_index);
     msg = msg.substr(s_index+1);
 
     int l_index = msg.find(" ");
-    if(l_index == string::npos) return "wrong l byte data size!";
+    if(l_index == string::npos){
+        cout << "wrong l byte data size!" << endl;
+        return "0";
+    }
     string l_s = msg.substr(0, l_index);
     string data = msg.substr(l_index+1);
 
@@ -163,20 +180,25 @@ string disk_write(string msg){
         l = stoi(l_s);
     }
     catch(std::invalid_argument&){
-		return "invalids W c s l! c s l must be integers. Current c s l: " + c_s + " " + s_s + " " + l_s;
+        cout << "invalids W c s l! c s l must be integers. Current c s l: " + c_s + " " + s_s + " " + l_s << endl;
+        return "0";
 	}
 
     cout << "l data is: " + l_s + " and data length is: " + to_string(data.length()) << endl;
 
     //check for correct block buffer
-    if(data.length()+1 > disk_block_buffer || l > disk_block_buffer) return "Wrong block size. Check l or data";
+    if(data.length()+1 > disk_block_buffer || l > disk_block_buffer){
+        cout << "Wrong block size. Check l or data" << endl;
+        return "0";
+    }
 
     if((c > 0 && c < disk_cylinders) && (s > 0 && s < disk_cylinders)){
         string rspns = set_block(c, s, l, data);
-        return "added " + rspns + " and on paper: " + get_block(c, s);
+        cout << "added " + rspns + " and on paper: " + get_block(c, s) << endl;
+        return "1";
     }
 
-     return "Wrong argument size";
+     return "0";
 }
 
 string set_block(int c, int s, int l, string data){
