@@ -17,10 +17,13 @@ CFLAGS=-I
 %.o: %.cpp $(DEPS)
 	$(CC) $(CFLAGS)$(_CONFIG) -c -o $@ $<
 
-all: basic_server disk_server
+all: basic_server disk_server filesystem_server
 
 basic_server: $(SSRC)/basic_server.o $(SSRC)/server_utils.o
 	$(CC) $(CFLAGS)$(_CONFIG) -o $(SBUILD)/basic_server $(SSRC)/basic_server.o $(SSRC)/server_utils.o
 
 disk_server: $(SSRC)/disk_server.o $(SSRC)/server_utils.o
 	$(CC) $(CFLAGS)$(_CONFIG) -o $(SBUILD)/disk_server $(SSRC)/disk_server.o $(SSRC)/server_utils.o
+
+filesystem_server: $(SSRC)/filesystem_server.o $(SSRC)/server_utils.o
+	$(CC) $(CFLAGS)$(_CONFIG) -o $(SBUILD)/filesystem_server $(SSRC)/filesystem_server.o $(SSRC)/server_utils.o
