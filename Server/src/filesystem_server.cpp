@@ -30,6 +30,19 @@ string dup_shell(string arg, string args);
 char** s_split(string str);
 string defaultRequest(string msg);
 
+//globals
+string D_ROOT = "./storage/"; 
+string D_DIR = "table";
+
+//format 
+// file map: string filename int[c, s, l] "\n"
+// directory map: string directoryname, file map
+map<string, map<string, int*>> directories;
+string current_directory;
+
+//global
+int c = 1, s = 1;
+
 //compile as: g++ -o ../build/basic_server basic_server.cpp server_utils.cpp
 int main(){
     Server_Utils server(PORT);
@@ -87,35 +100,37 @@ bool isInTable(string fileName){
 
 //intialize the table
 string format(string msg){
+    //IF RESET:
+    //clear the whole storage folder
+    //reset directories hash map
+
     cout << "Format File Command Received" << endl;
-    ofstream outfile("table.txt");
-    outfile << "" << endl;
+    //this is how we write to file
+    ofstream outfile(D_ROOT + D_DIR + ".txt");
+    // outfile << "created directory: " + D_DIR  << endl;
+    directories[D_DIR];
+
+    current_directory = D_DIR;
+
     return "Formatting file system";
 }
 
 //create a file and add the filename to table.txt
 string createFile(string fileName){
     cout << "Create file command received for " + fileName << endl;
-    ofstream outfile (fileName);
 
-    if(isInTable(fileName)){
+    if(directories[current_directory][fileName]){
         return "1. File already exists";
     }
-    else{
-        //add file to table
-        ofstream table;
-        table.open("table.txt", ios_base::app);
-        outfile << fileName;
 
+    //generate hash map
+    int data[3] = {c, s, 0};
+    directories[current_directory][fileName] = data;
 
-        //create file
-        outfile << "" << endl;
-        outfile.close();
-        return "0. successfully created file";
-    }
-
-
-
+    ofstream outfile(D_ROOT + current_directory + ".txt");
+    outfile << fileName + " " + to_string(directories[current_directory][fileName][0]) + " " + to_string(directories[current_directory][fileName][1]) + " " + to_string(directories[current_directory][fileName][2]) + "\n"<< endl;
+    
+    return "0. successfully created file";
 }
 
 //delete the file and remove the filename from table.txt
@@ -126,7 +141,7 @@ string deleteFile(string fileName){
         return "1. File of this name does not exist";
     }
 
-    if(remove(fileName) != 0){
+    if(remove(fileName.c_str()) != 0){
         return "2. Fail to delete file";
     }
     else{
@@ -139,8 +154,8 @@ string deleteFile(string fileName){
 string directoryListing(string msg){
     cout << "List Directory command received" << endl;
 
-    ifstream infile("table.txt")
-    string allDirectory = ((istreambuf_iterator<char>(infile)), istreambuf_iterator<char>());
+    ifstream infile("table.txt");
+    string allDirectory((istreambuf_iterator<char>(infile)), istreambuf_iterator<char>());
     return allDirectory;
 }
 
@@ -156,7 +171,7 @@ string readFile(string fileName){
     string contents;
     ifstream input (fileName);
     while(getline (input, line)){
-        content = content + line + "\n";
+        contents = contents + line + "\n";
     }
     return contents;
 }
@@ -168,57 +183,4 @@ string writeFile(string fileName, int bytes){
     }
 
     return "{Code for writing files here}";
-}
-
-string dup_shell(string arg, string args){
-    pid_t cid;
-    int wpid, status;
-
-    // setup pipes and child p
-    int     fd[2], nbytes;
-    pid_t   cid2;
-
-    pipe(fd);
-
-    int l_buffer = 256;
-    char str[l_buffer];
-
-    //our child will take in the pipe argument, and process it using stdout as the first argument
-    if((cid = fork()) == 0){
-        //close our output side, we are going to send stdout through this pipe
-        close(fd[0]);
-
-        //duplicate to pipe fd
-        dup2(fd[1], STDOUT_FILENO);
-        //close our write side
-        close(fd[1]);
-
-        //run the command
-        execvp(arg.c_str(), s_split(args));
-        
-        exit(0);
-    }
-    else{
-        //close write side of pipe
-        close(fd[1]);
-        //use the output of the pipe, and store it
-        //read into a string
-        read(fd[0], str, sizeof(str)+1);
-    }
-
-    string rspns = str;
-    return rspns;
-}
-
-char** s_split(string str){
-    int i;
-    char* buff[10];
-    char *token = strtok(strdup(str.c_str()), " ");
-    while (token != NULL) {
-        buff[i] = token;
-        token = strtok(NULL, " ");
-        i++;
-    }
-
-    return buff;
 }
