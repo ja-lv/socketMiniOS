@@ -33,6 +33,11 @@ string defaultRequest(string msg);
 void set_max_disk(string args);
 string server_read_call(int* csl);
 string server_write_call(int* csl, string bytes_l_s, string data);
+string makeDirectory(string dirName);
+string changeDirectory(string dirName);
+string printDirectory(string dirName);
+string rmDirectory(string dirName);
+
 
 
 //globals
@@ -84,6 +89,10 @@ int main(int argc, char *argv[]){
     the_map["L"] = directoryListing;
     the_map["R"] = readFile;
     the_map["W"] = writeFile;
+    the_map["mkdir"] = makeDirectory;
+    the_map["cd"] = changeDirectory;
+    the_map["pwd"] = printDirectory;
+    the_map["rmdir"] = rmDirectory;
 
 
     //infinite loop to act as a server
@@ -152,6 +161,34 @@ bool isInTable(string fileName){
     return false;
 }
 
+string makeDirectory(string dirName){
+    cout << "Make directory command received" << endl;
+    ofstream outfile("./storage/" + dirName + ".txt");
+    return "Successfully created a directory";
+}
+string changeDirectory(string dirName){
+    cout << "Change directory command received" << endl;
+    current_directory = dirName;
+    return "Current directory now changed to " + current_directory;
+}
+string printDirectory(string dirName){
+    cout << "Print directory command received" << endl;
+    return current_directory;
+}
+string rmDirectory(string dirName){
+    cout << "Remove directory command received" << endl;
+    //char filename[] = "./storage" + dirName + ".txt";
+    // if(remove("./storage/"+ dirName + ".txt") != 0){
+    //     return "Error deleting the directory.";
+    // }
+    // else{
+    //     return "Successfully removed the directory";
+    // }
+
+    return "Removing directory";
+}
+
+
 //intialize the table
 string format(string msg){
     //IF RESET:
@@ -206,26 +243,67 @@ string createFile(string fileName){
 //delete the file and remove the filename from table.txt
 string deleteFile(string fileName){
     cout << "Delete file command received for " + fileName << endl;
+    ifstream inFile;
+    //inFile.open("./storage/table.txt");
+    inFile.open("./storage/" + current_directory + ".txt");
 
-    if(!isInTable(fileName)){
-        return "1. File of this name does not exist";
-    }
+    string line;
+    string results;
 
-    if(remove(fileName.c_str()) != 0){
-        return "2. Fail to delete file";
+    while(getline(inFile, line)){
+        int pos = line.find(" ");
+        string name = line.substr(0, pos);
+        if(fileName == name){
+            
+        }
+        else{
+            results = results + line + "\n";
+        }
     }
-    else{
-        return "0. Successfully deleted";
-    }
+    //ofstream out("./storage/table.txt");
+    ofstream out("./storage/" + current_directory + ".txt");
+    out << results;
+
+    return "0. Successfully deleted file";
 }
 
 //print out all the file names from table.txt
 string directoryListing(string msg){
-    cout << "List Directory command received" << endl;
+    cout << "Command received to list directory" << endl;
 
-    ifstream infile("table.txt");
-    string allDirectory((istreambuf_iterator<char>(infile)), istreambuf_iterator<char>());
-    return allDirectory;
+    if(msg == "0"){
+        ifstream inFile;
+        //change this to read other directories
+        //inFile.open("./storage/table.txt");
+        inFile.open("./storage/" + current_directory + ".txt");
+        string line;
+        string results;
+
+        while(getline(inFile, line)){
+            int pos = line.find(" ");
+            string name = line.substr(0, pos);
+            results = results + name + "\n";
+        }
+
+        return results;
+    }
+    if(msg == "1"){
+        ifstream inFile;
+        //change this to read other directories
+        //inFile.open("./storage/table.txt")
+        inFile.open("./storage/" + current_directory + ".txt");
+
+        string line;
+        string results;
+        while(getline(inFile, line)){
+            results = results + line + "\n";
+        }
+
+        return results;
+    }
+    else{
+        return "Enter parameters either 0 or 1";
+    }
 }
 
 
