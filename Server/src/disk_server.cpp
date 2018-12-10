@@ -11,6 +11,7 @@
 #include <sstream>
 #include <vector>
 #include <iterator>
+#include <fstream>
 using namespace std;
 
 //custom classes
@@ -23,6 +24,7 @@ string disk_read(string msg);
 string disk_write(string msg);
 string get_block(int c, int s);
 string set_block(int c, int s, int l, string data);
+void disk_drive_write();
 
 //global variables
 int disk_cylinders;
@@ -34,6 +36,7 @@ int disk_block_buffer = 128;
 char* storage;
 // = c*s*b
 int storage_size;
+string storage_filename;
 
 char NULL_CHAR = '-';
 string NULL_STR(disk_block_buffer, '-');
@@ -41,10 +44,12 @@ string NULL_STR(disk_block_buffer, '-');
 //compile as: g++ -o ../build/basic_server basic_server.cpp server_utils.cpp
 int main(int argc,char* argv[]){
     int i;
-    if(argc <= 2 || (stoi(argv[1]) <= 0 || stoi(argv[2]) <= 0)){
-        cout << "Please enter the correct integer arguments: disk_cylinders disk_sectors.....\n" << endl;
+    if(argc <= 3 || (stoi(argv[1]) <= 0 || stoi(argv[2]) <= 0)){
+        cout << "Please enter the correct integer arguments: disk_cylinders disk_sectors filename.....\n" << endl;
         return 1;
     }
+
+    storage_filename = argv[3];
 
     //get arguments for disk cylinders and sectors
     disk_cylinders = stoi(argv[1]);
@@ -91,7 +96,7 @@ string defaultRequest(string msg){
 }
 
 string disk_info(string msg){
-    cout << "disk info request recieved: " + msg << endl;
+    cout << "disk info request recieved! " << endl;
     string rspns = to_string(disk_cylinders) + " " +to_string(disk_sectors);
     return rspns;
 }
@@ -195,6 +200,8 @@ string disk_write(string msg){
     if((c > 0 && c < disk_cylinders) && (s > 0 && s < disk_cylinders)){
         string rspns = set_block(c, s, l, data);
         cout << "added " + rspns + " and on paper: " + get_block(c, s) << endl;
+        //write to system
+        disk_drive_write();
         return "1";
     }
 
@@ -216,4 +223,10 @@ string set_block(int c, int s, int l, string data){
     //make sure the last value is a null
     if(block[i] != (char) NULL) block[i] = (char) NULL;
     return (string) block;
+}
+
+void disk_drive_write(){
+    ofstream outfile(DISK_DIR + storage_filename + ".minx");
+    string store = storage;
+    outfile << store << endl;
 }

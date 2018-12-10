@@ -8,7 +8,7 @@ CBUILD = .$(CROOT)$(BDIR)
 SBUILD = .$(SROOT)$(BDIR)
 CSRC = .$(CROOT)$(SDIR)
 SSRC = .$(SROOT)$(SDIR)
-_DEPS_S = server_utils.h 
+_DEPS_S = server_utils.h client_utils.h
 DEPS = $(patsubst %,.$(SROOT)$(IDIR)/%,$(_DEPS_S))
 
 CC=g++
@@ -25,5 +25,5 @@ basic_server: $(SSRC)/basic_server.o $(SSRC)/server_utils.o
 disk_server: $(SSRC)/disk_server.o $(SSRC)/server_utils.o
 	$(CC) $(CFLAGS)$(_CONFIG) -o $(SBUILD)/disk_server $(SSRC)/disk_server.o $(SSRC)/server_utils.o
 
-filesystem_server: $(SSRC)/filesystem_server.o $(SSRC)/server_utils.o
-	$(CC) $(CFLAGS)$(_CONFIG) -o $(SBUILD)/filesystem_server $(SSRC)/filesystem_server.o $(SSRC)/server_utils.o
+filesystem_server: $(SSRC)/filesystem_server.o $(SSRC)/server_utils.o $(SSRC)/client_utils.o
+	$(CC) $(CFLAGS)$(_CONFIG) -o $(SBUILD)/filesystem_server $(SSRC)/filesystem_server.o $(SSRC)/server_utils.o $(SSRC)/client_utils.o

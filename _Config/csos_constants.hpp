@@ -5,5 +5,6 @@
 
 const int PORT = 2031;
 const std::string END_ARG = "exit";
+const std::string DISK_DIR = "./disk/";
 
 #endif
