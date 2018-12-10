@@ -28,6 +28,7 @@ string readFile(string fileName);
 string writeFile(string fileName, int bytes);
 string dup_shell(string arg, string args);
 char** s_split(string str);
+string defaultRequest(string msg);
 
 //compile as: g++ -o ../build/basic_server basic_server.cpp server_utils.cpp
 int main(){
@@ -45,7 +46,7 @@ int main(){
     the_map["D"] = deleteFile;
     the_map["L"] = directoryListing;
     the_map["R"] = readFile;
-    the_map["W"] = writeFile;
+    // the_map["W"] = writeFile;
 
 
     //infinite loop to act as a server
@@ -59,7 +60,12 @@ int main(){
     server.close_connection();
 
     return 0;
+}
 
+string defaultRequest(string msg){
+    cout << "message recieved: " + msg << endl;
+    return "Please input valid arguments... Message recieved: " + msg;
+}
 
 //idea is to use table.txt as a manager for all the files in the directory. table.txt
 //will store all the filenames and when you create a file table.txt will update and
@@ -94,7 +100,6 @@ string createFile(string fileName){
 
     if(isInTable(fileName)){
         return "1. File already exists";
-    }
     }
     else{
         //add file to table
