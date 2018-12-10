@@ -11,6 +11,8 @@
 #include <sstream>
 #include <vector>
 #include <iterator>
+#include <fstream>
+#include <stdio.h>
 using namespace std;
 
 //custom classes
@@ -58,23 +60,58 @@ int main(){
     return 0;
 }
 
+
+
 string format(string msg){
     cout << "Format File Command Received" << endl;
+    ofstream outfile("table.txt");
+    outfile << "" << endl;
     return "Formatting file system";
 }
 
 string createFile(string fileName){
     cout << "Create file command received for " + fileName << endl;
-    return fileName + " file created";
+    ofstream outfile (fileName);
+
+    //Add method to check file in table here
+    if(false){
+        return "1. File already exists"
+    }
+    else if(false){
+        return "2. Error creating file"
+    }
+    else{
+        //add file to table
+        ofstream table;
+        table.open("table.txt", ios_base::app);
+        outfile << fileName <<;
+
+
+        //create file
+        outfile << "" << endl;
+        outfile.close();
+        return "0. successfully created file"
+    }
+
+
+
 }
 
 string deleteFile(string fileName){
     cout << "Delete file command received for " + fileName << endl;
-    return fileName + " file deleted";
+    if(remove(fileName) != 0){
+        return "Failed to delete";
+    }
+    else{
+        return fileName + " file deleted";
+    }
+    
 }
 
 string directoryListing(string msg){
     cout << "List Directory command received" << endl;
+
+    ifstream infile("table.txt")
     return "{Code for list directory here}";
 }
 
